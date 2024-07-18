@@ -1,7 +1,6 @@
 import {Game} from "../../domain/game.entity";
-import {GameQuestions} from "../../domain/game-questions.entity";
 
-enum GameStatus {
+export enum GameStatus {
     PendingSecondPlayer = "PendingSecondPlayer",
     Active = "Active",
     Finished  = "Finished "
@@ -12,9 +11,9 @@ enum AnswerStatus {
     Incorrect = "Incorrect"
 }
 
-class Questions {
-    id: string
-    body: string
+export class QuestionsDTO {
+    id: string;
+    body: string;
 }
 
 class Player {
@@ -37,12 +36,12 @@ class PlayerProgress {
 export class GameResponseDTO {
     id: string
     firstPlayerProgress: PlayerProgress
-    secondPlayerProgress: PlayerProgress
-    questions: GameQuestions[]
+    secondPlayerProgress: PlayerProgress | null;
+    questions: QuestionsDTO[]
     status: GameStatus
     pairCreatedDate: string
-    startGameDate: string
-    finishGameDate: string
+    startGameDate: string | null;
+    finishGameDate: string | null;
 
     constructor(game: Game) {
         this.id = game.id.toString()
@@ -50,30 +49,33 @@ export class GameResponseDTO {
             answers: game.playerOne.answers.map( answer => ({
                 questionId: answer.question.id.toString(),
                 answerStatus: answer.status as AnswerStatus,
-                addedAt: answer.createdAt.toISOString()
+                addedAt: new Date(answer.createdAt).toISOString()
             })),
             player: {
-                id: game.playerOne.id.toString(),
+                id: game.playerOne.user.id.toString(),
                 login: game.playerOne.user.login
             },
             score: game.playerOne.score
         }
-        this.secondPlayerProgress = {
-            answers: game.playerTwo.answers.map( answer => ({
+        this.secondPlayerProgress = game.playerTwo ? {
+            answers: game.playerTwo.answers.map(answer => ({
                 questionId: answer.question.id.toString(),
                 answerStatus: answer.status as AnswerStatus,
-                addedAt: answer.createdAt.toISOString()
+                addedAt: new Date(answer.createdAt).toISOString()
             })),
             player: {
                 id: game.playerTwo.id.toString(),
                 login: game.playerTwo.user.login
             },
             score: game.playerTwo.score
-        }
-        this.questions = game.gameQuestions
+        } : null;
+        this.questions = game.gameQuestions ? game.gameQuestions.map(gq => ({
+            id: gq.question.id.toString(),
+            body: gq.question.body
+        })) : [];
         this.status = game.status as GameStatus
-        this.pairCreatedDate = game.pairCreatedDate.toISOString()
-        this.startGameDate = game.startGameDate.toISOString()
-        this.finishGameDate = game.finishGameDate.toISOString()
+        this.pairCreatedDate = new Date(game.pairCreatedDate).toISOString();
+        this.startGameDate = game.startGameDate ? new Date(game.startGameDate).toISOString() : null;
+        this.finishGameDate = game.finishGameDate ? new Date(game.finishGameDate).toISOString() : null;
     }
 }

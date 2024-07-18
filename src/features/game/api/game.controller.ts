@@ -1,5 +1,5 @@
 import {CommandBus, QueryBus} from "@nestjs/cqrs";
-import {Body, Controller, HttpCode, HttpStatus, Post, UseGuards} from "@nestjs/common";
+import {Controller, HttpCode, HttpStatus, Post, UseGuards} from "@nestjs/common";
 import {AuthGuard} from "@nestjs/passport";
 import {AccessTokenPayloadDTO} from "../../auth/api/dto/input/access-token-params.dto";
 import {GetUser} from "../../../infrastructure/decorators/get-user.decorator";
@@ -14,9 +14,9 @@ import {ConnectToTheGameCommand} from "../application/usecases/connect-to-the-ga
         ) {}
 
         @UseGuards(AuthGuard('jwt'))
-        @Post()
+        @Post('connection')
         @HttpCode(HttpStatus.OK)
-        async addQuestion(@GetUser() user: AccessTokenPayloadDTO): Promise<GameResponseDTO> {
+        async addPlayer(@GetUser() user: AccessTokenPayloadDTO): Promise<GameResponseDTO> {
             return this.commandBus.execute(new ConnectToTheGameCommand(user))
         }
     }

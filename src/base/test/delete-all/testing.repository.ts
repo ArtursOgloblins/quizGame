@@ -26,15 +26,18 @@ export class TestingRepository {
     await queryRunner.startTransaction();
 
     try {
+      // Сначала удаляем данные из таблиц, ссылающихся на `game` и `player`
+      await queryRunner.query('DELETE FROM game_questions');
+      await queryRunner.query('DELETE FROM answers');
+      await queryRunner.query('DELETE FROM game');
+      await queryRunner.query('DELETE FROM player');
+
+      // Затем удаляем данные из остальных таблиц
+      await queryRunner.query('DELETE FROM questions');
       await queryRunner.query('DELETE FROM users_confirmation');
       await queryRunner.query('DELETE FROM password_recovery');
       await queryRunner.query('DELETE FROM refresh_token');
       await queryRunner.query('DELETE FROM users');
-      await queryRunner.query('DELETE FROM questions');
-      await queryRunner.query('DELETE FROM game');
-      await queryRunner.query('DELETE FROM player');
-      await queryRunner.query('DELETE FROM game_questions');
-      await queryRunner.query('DELETE FROM answers');
 
       await queryRunner.commitTransaction();
     } catch (error) {

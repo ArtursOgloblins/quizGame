@@ -1,4 +1,4 @@
-import {Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Player} from "./player.entity";
 import {GameQuestions} from "./game-questions.entity";
 
@@ -10,23 +10,21 @@ export class Game {
     @Column({ type: 'varchar' })
     public status: string;
 
-    @OneToOne(() => Player)
-    @JoinColumn()
+    @ManyToOne(() => Player)
     public playerOne: Player;
 
-    @OneToOne(() => Player)
-    @JoinColumn()
+    @ManyToOne(() => Player)
     public playerTwo: Player;
 
     @OneToMany(() => GameQuestions, (questions) => questions.game)
-    public gameQuestions: GameQuestions[]
+    public gameQuestions: GameQuestions[];
 
-    @Column({type: Date})
-    public pairCreatedDate: Date
+    @Column({ type: 'date' })
+    public pairCreatedDate: Date;
 
-    @Column({type: Date})
-    public startGameDate: Date
+    @Column({ type: 'date', nullable: true })
+    public startGameDate: Date;
 
-    @Column({type: Date})
-    public finishGameDate: Date
+    @Column({ type: 'date', nullable: true })
+    public finishGameDate: Date;
 }

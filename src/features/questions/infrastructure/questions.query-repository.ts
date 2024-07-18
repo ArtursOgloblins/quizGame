@@ -5,6 +5,7 @@ import {FindOperator, ILike, Repository} from "typeorm";
 import {QuestionsQueryParamsDTO} from "../api/dto/input/questions-query-params.dto";
 import {PaginatedQuestionsResponseDto} from "../api/dto/uotput/paginated-questions-response.dto";
 import {QuestionResponseDto} from "../api/dto/uotput/question-response.dto";
+import {gameRandomQuestions} from "../../game/api/output/game-random-question.dto";
 
 interface WhereConditions {
     body?: FindOperator<string>;
@@ -82,6 +83,25 @@ export class QuestionsQueryRepository {
             return question
         } catch (error) {
             console.log('Error in findQuestionById', error);
+            throw error;
+        }
+    }
+
+    public async getRandomQuestions(questionsNumber: number): Promise<gameRandomQuestions[]> {
+        try {
+            const res = await this.questionsQueryRepository
+                .createQueryBuilder('q')
+                .orderBy("RANDOM()")
+                .limit(questionsNumber)
+                .getMany()
+
+            return res.map(question => ({
+                id: question.id,
+                body: question.body
+            }))
+
+        } catch (error) {
+            console.log('Error in getRandomQuestions', error);
             throw error;
         }
     }

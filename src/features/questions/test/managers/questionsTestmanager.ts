@@ -1,9 +1,7 @@
 import {NewQuestionDto} from "../../api/dto/input/new-question.dto";
 import {INestApplication} from "@nestjs/common";
 import * as request from "supertest";
-import {UserQueryParamsDTO} from "../../../users/api/dto/input/user-queryParams.dto";
 import {QuestionsQueryParamsDTO} from "../../api/dto/input/questions-query-params.dto";
-import {QuestionsQueryRepository} from "../../infrastructure/questions.query-repository";
 import {PublishQuestionDTO} from "../../api/dto/input/publish-question.dto";
 
 

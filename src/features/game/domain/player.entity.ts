@@ -1,4 +1,4 @@
-import {Column, Entity, Index, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Game} from "./game.entity";
 import {Answers} from "./answers.entity";
 import {Users} from "../../users/domain/users.entity";
@@ -11,15 +11,15 @@ export class Player {
     @Column({ type: 'varchar' })
     public status: string;
 
-    @Column({type: 'int'})
-    public score: number
+    @Column({ type: 'int', default: 0 })
+    public score: number;
 
     @ManyToOne(() => Users, (user) => user.player)
-    public user: Users
+    public user: Users;
 
-    @OneToOne(() => Game)
+    @ManyToOne(() => Game, (game) => [game.playerOne, game.playerTwo])
     public game: Game;
 
     @OneToMany(() => Answers, (answers) => answers.player, { cascade: true })
-    public answers: Answers[]
+    public answers: Answers[];
 }

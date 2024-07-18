@@ -44,10 +44,13 @@ export class AuthTestManager {
     return response;
   }
 
-  async confirmRegistration(confirmationCode: ConfirmationCodeDto) {
+  async confirmRegistration(confirmationCode: string) {
+    const confirmationCodeDto = new ConfirmationCodeDto();
+    confirmationCodeDto.code = confirmationCode;
+
     const response = await request(this.app.getHttpServer())
-      .post(`/auth/registration-confirmation`)
-      .send({ code: confirmationCode });
+        .post(`/auth/registration-confirmation`)
+        .send({ code: confirmationCodeDto.code });
     if (response.status !== 204) {
       console.error(response.body);
     }
