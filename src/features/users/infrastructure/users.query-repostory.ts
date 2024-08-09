@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import {ILike, Repository} from 'typeorm';
 import { Users } from '../domain/users.entity';
 import { PaginatedUserResponseDTO } from '../api/dto/output/paginated-users-response.dto';
 import { UserResponseDTO } from '../api/dto/output/user-response.dto';

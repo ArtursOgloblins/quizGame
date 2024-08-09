@@ -3,6 +3,12 @@ import {Game} from "./game.entity";
 import {Answers} from "./answers.entity";
 import {Users} from "../../users/domain/users.entity";
 
+export enum PlayerGameResult {
+    Win = "win",
+    Lose = "lose",
+    Draw  = "draw"
+}
+
 @Entity()
 export class Player {
     @PrimaryGeneratedColumn()
@@ -13,6 +19,9 @@ export class Player {
 
     @Column({ type: 'int', default: 0 })
     public score: number;
+
+    @Column({type: 'varchar', nullable: true})
+    public gameResult: PlayerGameResult
 
     @ManyToOne(() => Users, (user) => user.player)
     public user: Users;

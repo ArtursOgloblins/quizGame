@@ -124,7 +124,7 @@ export class QuestionsTestManager {
         const response = await request(this.app.getHttpServer())
             .put(`/sa/quiz/questions/${questionId}/publish`)
             .auth(this.CREDENTIALS.login, this.CREDENTIALS.password)
-            .send(publishStatus)
+            .send({published: true})
 
         if (response.status !== 204) {
             console.error(response.body);

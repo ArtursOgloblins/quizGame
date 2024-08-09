@@ -35,7 +35,7 @@ import {RateLimitSettings} from "../../../base/types/types";
 
 
 const rateLimit: RateLimitSettings = {
-    limit: 5,
+    limit: 10,
     ttl: 10000,
 };
 

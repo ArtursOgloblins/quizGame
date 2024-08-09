@@ -32,6 +32,7 @@ export class QuestionsQueryRepository {
             const publishedStatus = params.publishedStatus !== undefined ? Boolean(params.publishedStatus) : null;
             const validSortColumns = {
                 createdAt: 'createdAt',
+                body: 'body',
             };
 
             const validSortDirections = ['asc', 'desc'];
@@ -91,6 +92,7 @@ export class QuestionsQueryRepository {
         try {
             const res = await this.questionsQueryRepository
                 .createQueryBuilder('q')
+                .orderBy("q.questionIndex", "DESC")
                 .orderBy("RANDOM()")
                 .limit(questionsNumber)
                 .getMany()

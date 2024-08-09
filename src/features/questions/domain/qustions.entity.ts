@@ -2,11 +2,10 @@ import {
     Column,
     CreateDateColumn,
     DeleteDateColumn,
-    Entity, Index, ManyToOne,
+    Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
-import {GameQuestions} from "../../game/domain/game-questions.entity";
 
 @Entity()
 export class Questions {
@@ -26,7 +25,7 @@ export class Questions {
     public createdAt: Date;
 
 
-    @UpdateDateColumn({ name: 'updatedAt' })
+    @UpdateDateColumn({ name: 'updatedAt', nullable: true})
     public updatedAt: Date | null;
 
     @DeleteDateColumn()

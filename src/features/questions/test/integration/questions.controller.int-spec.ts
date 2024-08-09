@@ -12,7 +12,7 @@ import {RegisterUserCommandMock} from "../../../users/test/mock/register-user.us
 import {QuestionsTestManager} from "../managers/questionsTestmanager";
 
 
-describe('questions int', () => {
+describe('questions  int', () => {
     let app: INestApplication;
     let usersSaManager: UsersSaTestManager;
     let authTestManager: AuthTestManager;
@@ -56,7 +56,6 @@ describe('questions int', () => {
         const queryParams = questionsTestManager.QUESTIONS_QUERY_PARAMS
         const response = await questionsTestManager.getAllQuestions(queryParams)
         const questionIds: [] = response.body.items.map(i => i.id)
-        console.log(questionIds)
         expect.setState({
             questionIds: questionIds
         });

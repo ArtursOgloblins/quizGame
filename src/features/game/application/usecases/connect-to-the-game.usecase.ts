@@ -28,23 +28,24 @@ export class ConnectToTheGameUseCase implements ICommandHandler<ConnectToTheGame
         const randomQuestions = await this.questionsQueryRepository.getRandomQuestions(questionsNumber)
 
         if (isPlayerInActiveGame) {
+            console.log('PlayerInActiveGame')
             throw new ForbiddenException('User is already in Active game');
         }
 
-        let game: any
         if (!existingGame) {
-            game = await this.gameRepository.registerNewGame(user, pendingStatus, randomQuestions);
+            await this.gameRepository.registerNewGame(user, pendingStatus, randomQuestions);
         } else {
-            game = await this.gameRepository.addSecondPlayerToTheGame(existingGame, user, activeStatus);
+            await this.gameRepository.addSecondPlayerToTheGame(existingGame, user, activeStatus);
         }
 
-        const gameResponse = new GameResponseDTO(game);
-        console.log('gameResponse', gameResponse);
-        return gameResponse;
+        const res = await this.gameQueryRepository.getUsersActiveGame(user.userId, activeStatus, pendingStatus)
+
+        return new GameResponseDTO(res);
     }
 
         private async isPlayerActive(user: AccessTokenPayloadDTO) {
             const playerStatus = GameStatus.Active
+            console.log('user.userId', user.userId)
             return await this.gameQueryRepository.isPlayerActive(user.userId, playerStatus)
         }
 

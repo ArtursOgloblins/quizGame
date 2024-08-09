@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -11,19 +11,20 @@ import { EmailAdapter } from './base/email/email.adapter';
 import { EmailService } from './base/email/email.service';
 import { IsValidConfirmationCodeConstraint } from './infrastructure/decorators/auth.user-code-validation.decorator';
 import { IsValidEmailForCodeResendingConstraint } from './infrastructure/decorators/auth.is-email-valid.decorator';
-import {TestingController} from "./base/test/delete-all/testing.controller";
-import {UsersModule} from "./features/users/users.module";
-import {AuthModule} from "./features/auth/auth.module";
-import {TestingRepository} from "./base/test/delete-all/testing.repository";
-import {QuestionsModule} from "./features/questions/questions.module";
-import {GameModule} from "./features/game/game.module";
+import { TestingController } from "./base/test/delete-all/testing.controller";
+import { UsersModule } from "./features/users/users.module";
+import { AuthModule } from "./features/auth/auth.module";
+import { TestingRepository } from "./base/test/delete-all/testing.repository";
+import { QuestionsModule } from "./features/questions/questions.module";
+import { GameModule } from "./features/game/game.module";
+import { LoggerMiddleware } from "./infrastructure/middlewares/logger.middleware";
+import {IsBooleanStrictConstraint} from "./infrastructure/decorators/is-boolean-strict.decorator";
 
 const featureModules = [
   UsersModule,
   AuthModule,
   QuestionsModule,
   GameModule
-  //SecurityDevicesModule,
 ];
 
 const constraints = [
@@ -31,6 +32,7 @@ const constraints = [
   IsUserLoginExistConstraint,
   IsValidConfirmationCodeConstraint,
   IsValidEmailForCodeResendingConstraint,
+  IsBooleanStrictConstraint
 ];
 
 @Module({
@@ -58,4 +60,10 @@ const constraints = [
     ...constraints,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+        .apply(LoggerMiddleware)
+        .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

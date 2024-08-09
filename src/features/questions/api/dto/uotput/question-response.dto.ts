@@ -6,7 +6,7 @@ export class QuestionResponseDto {
     correctAnswers: string[]
     published: boolean
     createdAt: string
-    updatedAt: string
+    updatedAt: string | null
 
     constructor(question: Questions) {
         this.id = question.id.toString()
@@ -14,6 +14,6 @@ export class QuestionResponseDto {
         this.correctAnswers = question.correctAnswers
         this.published = question.published
         this.createdAt = question.createdAt.toISOString()
-        this.updatedAt = question.updatedAt.toISOString()
+        this.updatedAt = question.updatedAt ? question.updatedAt.toISOString() : null
     }
 }

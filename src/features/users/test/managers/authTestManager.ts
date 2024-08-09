@@ -15,20 +15,54 @@ export class AuthTestManager {
     password: 'password123',
     email: 'john@doe.com',
   };
-
   USER_TWO_INPUT_DATA: RegisterUserDTO = {
     login: 'JaneDoe',
     password: 'password123',
     email: 'jane@doe.com',
+  };
+  USER_THREE_INPUT_DATA: RegisterUserDTO = {
+    login: 'user3',
+    password: 'password123',
+    email: 'anon@imus.com',
+  };
+  USER_FOUR_INPUT_DATA: RegisterUserDTO = {
+    login: 'user4',
+    password: 'password123',
+    email: 'user4@mail.com',
+  };
+  USER_FIVE_INPUT_DATA: RegisterUserDTO = {
+    login: 'user5',
+    password: 'password123',
+    email: 'user5@mail.com',
+  };
+  USER_SIX_INPUT_DATA: RegisterUserDTO = {
+    login: 'user6',
+    password: 'password123',
+    email: 'user6@mail.com',
   };
 
   USER_ONE_CREDENTIALS = {
     loginOrEmail: 'JohnDoe',
     password: 'password123',
   };
-
   USER_TWO_CREDENTIALS = {
     loginOrEmail: 'JaneDoe',
+    password: 'password123',
+  };
+  USER_THREE_CREDENTIALS = {
+    loginOrEmail: 'user3',
+    password: 'password123',
+  };
+  USER_FOUR_CREDENTIALS = {
+    loginOrEmail: 'user4',
+    password: 'password123',
+  };
+  USER_FIVE_CREDENTIALS = {
+    loginOrEmail: 'user5',
+    password: 'password123',
+  };
+  USER_SIX_CREDENTIALS = {
+    loginOrEmail: 'user6',
     password: 'password123',
   };
 

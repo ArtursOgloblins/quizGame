@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 
 @Injectable()
@@ -16,16 +15,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     async validate(req: Request, payload: any) {
-        const authorizationHeader = req.headers.authorization;
-        console.log('Authorization Header:', authorizationHeader);
-        const decodedToken = jwt.decode(authorizationHeader.split(' ')[1], {
-            complete: true,
-        });
-        console.log(decodedToken);
-        return {
+        const user = {
             userEmail: payload.userEmail,
             username: payload.username,
             userId: payload.userId,
         };
+
+        console.log('Payload in JwtStrategy:', payload);
+        console.log('User object in JwtStrategy:', user);
+
+        req.user = user;
+
+        return user;
     }
 }

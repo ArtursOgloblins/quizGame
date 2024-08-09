@@ -4,7 +4,7 @@ import {ArrayNotEmpty, IsArray, IsString, Length} from "class-validator";
 export class NewQuestionDto {
     @TrimDecorator()
     @IsString()
-    @Length(50, 500)
+    @Length(10, 500)
     body: string
 
     @IsArray()

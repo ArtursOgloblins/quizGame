@@ -42,8 +42,8 @@ export class QuestionsController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async publishQuestion(
         @Param('questionId', ParseIntPipe) questionId: number,
-        @Body() publishQuestionDTO: PublishQuestionDTO) {
-        return this.commandBus.execute(new PublishQuestionCommand(questionId, publishQuestionDTO))
+        @Body() publishQuestion: PublishQuestionDTO) {
+        return this.commandBus.execute(new PublishQuestionCommand(questionId, publishQuestion))
     }
 
     @UseGuards(BasicAuthGuard)

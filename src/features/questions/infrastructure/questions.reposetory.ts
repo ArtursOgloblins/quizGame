@@ -13,9 +13,10 @@ export class QuestionsRepository {
         private readonly questionsRepository: Repository<Questions>
     ) {}
 
-    public async addQuestion(inputData: NewQuestionInputDataDto) {
+    public async addQuestion(inputData: NewQuestionInputDataDto): Promise<Questions> {
         try {
             const question = this.questionsRepository.create(inputData)
+            question.updatedAt = null;
             return await this.questionsRepository.save(question)
         } catch (error) {
             console.log('Error in addQuestion', error);

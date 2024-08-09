@@ -7,8 +7,8 @@ import { useContainer } from 'class-validator';
 import { AppModule } from '../app.module';
 
 import * as cookieParser from 'cookie-parser';
-import {LoggerMiddlewareFunc} from "../infrastructure/middlewares/logger.middleware";
 import {HttpExceptionFilter} from "../infrastructure/exception-filters/http.exception-filter";
+import {LoggerMiddleware} from "../infrastructure/middlewares/logger.middleware";
 
 export const applyAppSettings = (app: INestApplication) => {
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -21,7 +21,7 @@ export const applyAppSettings = (app: INestApplication) => {
 
     setAppPipes(app);
 
-    app.use(LoggerMiddlewareFunc);
+    app.use(new LoggerMiddleware().use);
 };
 
 const setAppPipes = (app: INestApplication) => {
