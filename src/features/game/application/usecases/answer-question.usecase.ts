@@ -79,7 +79,7 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
         if (questionIndex !== 4) {
             return await this.gameRepository.addAnswer(question, answerStatus, activePlayer, standardPointsAmount, playerNewStatus)
         } else {
-            console.log('_processLastQuestion')
+            await this.startSecondPlayerTimer(players);
             return this._processLastQuestion(players, question, answerStatus, standardPointsAmount)
         }
     }
@@ -97,20 +97,16 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
         const activePlayerStatus = GameStatus.Finished;
 
         const isOtherPlayerFinished = players.otherPlayer.status === GameStatus.Finished;
-        console.log('isOtherPlayerFinished', isOtherPlayerFinished)
         const gameStatus = isOtherPlayerFinished ? GameStatus.Finished : GameStatus.Active;
-        console.log('gameStatus', gameStatus)
 
         const otherPlayerHasCorrectAnswers = players.otherPlayer.answers.some(
             answer => answer.status === AnswerStatus.Correct
         );
-        console.log('otherPlayerHasCorrectAnswers', otherPlayerHasCorrectAnswers)
 
         let otherPlayerBonusPoints = 0
         if (isOtherPlayerFinished) {
             otherPlayerBonusPoints = otherPlayerHasCorrectAnswers ? 1 : 0;
         }
-        console.log('otherPlayerBonusPoints', otherPlayerBonusPoints)
 
         const gameFinishedAt = gameStatus === GameStatus.Finished ? new Date() : null;
 
@@ -126,6 +122,27 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
         }
 
         return await this.gameRepository.addLastAnswer(addLastAnswerParams);
+    }
+
+    private async startSecondPlayerTimer(players: Players): Promise<void> {
+        const SECOND_PLAYER_TIMEOUT = 10000; // 10 секунд
+        const secondPlayer = players.otherPlayer.player;
+
+        setTimeout(async () => {
+            if (secondPlayer.status !== GameStatus.Finished) {
+                await this.processRemainingQuestionsAsIncorrect(players);
+            }
+        }, SECOND_PLAYER_TIMEOUT);
+    }
+
+    private async processRemainingQuestionsAsIncorrect(players: Players): Promise<void> {
+        const unansweredQuestionIndexes = await this.gameQueryRepository.getUnansweredQuestionIndexes(players.otherPlayer.player.id, players.game.id);
+
+        for (const index of unansweredQuestionIndexes) {
+            await this.answerNextQuestion(players, index, { answer: '' });
+        }
+
+        await this._processLastQuestion(players, null, AnswerStatus.Incorrect, 0);
     }
 
     private async checkGameUsers(userId: string, players: any) {

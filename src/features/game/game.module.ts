@@ -2,7 +2,7 @@ import {  Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {UsersModule} from "../users/users.module";
-import {GameController} from "./api/game.controller";
+import {GameController, UsersGameController} from "./api/game.controller";
 import {GameRepository} from "./infrastructure/game.repository";
 import {GameQueryRepository} from "./infrastructure/game.query-repository";
 import {Answers} from "./domain/answers.entity";
@@ -16,6 +16,8 @@ import {GetGameByIdQuery} from "./infrastructure/queries/game.get-by-id.query";
 import {GetCurrentGameQuery} from "./infrastructure/queries/game.get-user-active-game.query";
 import {AnswerQuestionUseCase} from "./application/usecases/answer-question.usecase";
 import {GetAllUserGamesQuery} from "./infrastructure/queries/game.get-all-my-games.query";
+import {GetUserStatisticQuery} from "./infrastructure/queries/game.get-my-statistic.query";
+import {GetUsersTopQuery} from "./infrastructure/queries/game.get-users-top.query";
 
 @Module({
     imports: [
@@ -23,18 +25,18 @@ import {GetAllUserGamesQuery} from "./infrastructure/queries/game.get-all-my-gam
         UsersModule,
         TypeOrmModule.forFeature([Answers, Game, GameQuestions, Player, Questions])
     ],
-    controllers: [GameController],
+    controllers: [GameController, UsersGameController],
     providers: [
         GameRepository,
         GameQueryRepository,
         QuestionsQueryRepository,
-
         AnswerQuestionUseCase,
         ConnectToTheGameUseCase,
-
         GetCurrentGameQuery,
         GetGameByIdQuery,
         GetAllUserGamesQuery,
+        GetUserStatisticQuery,
+        GetUsersTopQuery
     ],
     exports: [GameRepository, GameQueryRepository, TypeOrmModule],
 })

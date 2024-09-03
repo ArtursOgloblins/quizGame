@@ -1,4 +1,3 @@
-
 export class UserStatisticResponseDTO {
     sumScore: number
     avgScores: number

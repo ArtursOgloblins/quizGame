@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {EntityManager, Repository} from "typeorm";
 import {Game} from "../domain/game.entity";
-import {Player} from "../domain/player.entity";
+import {Player, PlayerGameResult} from "../domain/player.entity";
 import {GameQuestions} from "../domain/game-questions.entity";
 import {AnswerStatus, GameStatus} from "../api/output/game-response.dto";
 import {Questions} from "../../questions/domain/qustions.entity";
@@ -28,22 +28,26 @@ export class GameRepository {
 
     public async registerNewGame(user: AccessTokenPayloadDTO, gameStatus: GameStatus, questions: gameRandomQuestions[]) {
         return await this.gameRepository.manager.transaction(async (manager: EntityManager) => {
-            const player = manager.create(Player, {
-                user: {id: +user.userId, login: user.username},
-                status: GameStatus.Active,
-                score: 0,
-                answers: []
-            })
-            await manager.save(Player, player)
 
             const game = manager.create(Game, {
                 status: gameStatus,
-                playerOne: player,
                 pairCreatedDate: new Date(),
                 startGameDate: null,
                 finishGameDate: null
             })
             await manager.save(Game, game)
+
+            const player = manager.create(Player, {
+                user: {id: +user.userId, login: user.username},
+                status: GameStatus.Active,
+                score: 0,
+                answers: [],
+                game: game
+            })
+            await manager.save(Player, player)
+
+            game.playerOne = player;
+            await manager.save(Game, game);
 
             const gameQuestions = questions.map((question, index) =>
                 manager.create(GameQuestions, {
@@ -68,7 +72,8 @@ export class GameRepository {
                 user: {id: +user.userId, login: user.username},
                 status: GameStatus.Active,
                 score: 0,
-                answers: []
+                answers: [],
+                game: existingGame
             })
             await manager.save(Player, player)
 
@@ -118,26 +123,31 @@ export class GameRepository {
                 gameFinishedAt
             } = params
             return await this.gameQuestionsRepository.manager.transaction(async (manager: EntityManager) => {
+                const activePlayer = players.activePlayer.player
+                const otherPlayer = players.otherPlayer.player
 
-                console.log('Initial Params:', params);
+                activePlayer.score += activePlayerPoints;
+                activePlayer.status = activePlayerStatus;
+                otherPlayer.score += otherPlayerBonusPoints;
 
-                players.activePlayer.player.score += activePlayerPoints;
-                players.activePlayer.player.status = activePlayerStatus;
-                console.log('Updated Active Player:', players.activePlayer.player);
-
-                console.log('Initial Other Player:', players.otherPlayer.player);
-                if (players.otherPlayer && players.otherPlayer.player) {
-                    players.otherPlayer.player.score += otherPlayerBonusPoints;
-                    await manager.save(Player, players.otherPlayer.player);
-                    console.log('Updated Other Player:', players.otherPlayer.player);
+                if (activePlayer.score === otherPlayer.score) {
+                    activePlayer.gameResult = PlayerGameResult.Draw
+                    otherPlayer.gameResult = PlayerGameResult.Draw
+                } else if (activePlayer.score > otherPlayer.score) {
+                    activePlayer.gameResult = PlayerGameResult.Win
+                    otherPlayer.gameResult = PlayerGameResult.Lose
+                } else {
+                    activePlayer.gameResult = PlayerGameResult.Lose
+                    otherPlayer.gameResult = PlayerGameResult.Win
                 }
 
-                await manager.save(Player, players.activePlayer.player);
+                await manager.save(Player, activePlayer);
+                await manager.save(Player, otherPlayer);
+
 
                 players.game.status = gameStatus;
                 players.game.finishGameDate = gameFinishedAt;
                 await manager.save(Game, players.game);
-                console.log('Updated Game:', players.game)
 
                 const answer = new Answers();
                 answer.body = question.question.body;

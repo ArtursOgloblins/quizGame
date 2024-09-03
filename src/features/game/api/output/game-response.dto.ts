@@ -48,9 +48,9 @@ export class GameResponseDTO {
         this.firstPlayerProgress = {
             answers: game.playerOne.answers.length > 0 ? game.playerOne.answers.map(answer => {
                 return {
-                    questionId: answer.question.id.toString(),
+                    addedAt: new Date(answer.createdAt).toISOString(),
                     answerStatus: answer.status as AnswerStatus,
-                    addedAt: new Date(answer.createdAt).toISOString()
+                    questionId: answer.question.id.toString()
                 };
             }) : [],
             player: {
@@ -62,9 +62,9 @@ export class GameResponseDTO {
         this.secondPlayerProgress = game.playerTwo ? {
             answers: game.playerTwo.answers.length > 0 ? game.playerTwo.answers.map(answer => {
                 return {
-                    questionId: answer.question.id.toString(),
+                    addedAt: new Date(answer.createdAt).toISOString(),
                     answerStatus: answer.status as AnswerStatus,
-                    addedAt: new Date(answer.createdAt).toISOString()
+                    questionId: answer.question.id.toString()
                 };
             }) : [],
             player: {

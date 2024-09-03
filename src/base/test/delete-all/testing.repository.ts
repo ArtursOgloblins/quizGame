@@ -25,13 +25,12 @@ export class TestingRepository {
     await queryRunner.startTransaction();
 
     try {
-      // Сначала удаляем данные из таблиц, ссылающихся на `game_questions`
+      // Отключаем проверку внешних ключей
+      await queryRunner.query('SET CONSTRAINTS ALL DEFERRED');
+
+      // Удаляем данные из таблиц
       await queryRunner.query('DELETE FROM answers');
-
-      // Затем удаляем данные из таблицы `game_questions`
       await queryRunner.query('DELETE FROM game_questions');
-
-      // Удаляем данные из остальных таблиц
       await queryRunner.query('DELETE FROM game');
       await queryRunner.query('DELETE FROM player');
       await queryRunner.query('DELETE FROM questions');

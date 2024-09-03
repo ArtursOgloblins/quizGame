@@ -120,7 +120,9 @@ export class QuestionsTestManager {
         return response;
     }
 
-    async publishQuestion(questionId: string, publishStatus: PublishQuestionDTO) {
+    async publishQuestion(questionId: string,
+
+                          publishStatus: PublishQuestionDTO) {
         const response = await request(this.app.getHttpServer())
             .put(`/sa/quiz/questions/${questionId}/publish`)
             .auth(this.CREDENTIALS.login, this.CREDENTIALS.password)

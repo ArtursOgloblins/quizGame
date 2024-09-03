@@ -27,6 +27,9 @@ import {GamesQueryParamsDTO} from "./input/games-query-params.dto";
 import {PaginatedGamesResponseDto} from "./output/paginated-games-response.dto";
 import {UserStatisticResponseDTO} from "./output/user-statistic-response.dto";
 import {GetUserStatistic} from "../infrastructure/queries/game.get-my-statistic.query";
+import {PaginatedUsersTopResponseDTO} from "./output/user-top-response.dto";
+import {GetUsersTop} from "../infrastructure/queries/game.get-users-top.query";
+import {UsersTopQueryParamsDTO} from "./input/users-top-query-params.dto";
 
 @Controller('pair-game-quiz/pairs')
 @UseGuards(AuthGuard('jwt'))
@@ -58,14 +61,6 @@ import {GetUserStatistic} from "../infrastructure/queries/game.get-my-statistic.
             return this.queryBus.execute(new GetCurrentGame(user));
         }
 
-        @Get('my-statistic')
-        @HttpCode(HttpStatus.OK)
-        async getAllMyGames(
-            @GetUser() user: AccessTokenPayloadDTO,
-        ): Promise<UserStatisticResponseDTO> {
-            return this.queryBus.execute(new GetUserStatistic(user))
-        }
-
         @Get('my')
         @HttpCode(HttpStatus.OK)
         async getMyStatistic(
@@ -82,5 +77,30 @@ import {GetUserStatistic} from "../infrastructure/queries/game.get-my-statistic.
             @GetUser() user: AccessTokenPayloadDTO,
             @Param('gameId', ParseIntPipe) gameId: number): Promise<GameResponseDTO> {
             return this.queryBus.execute(new GetGameById(gameId, user));
+        }
+    }
+
+    @Controller('pair-game-quiz/users')
+    @UseInterceptors(LoggerMiddleware)
+    export class UsersGameController {
+        constructor(
+            private readonly queryBus: QueryBus,
+        ) {}
+
+        @Get('my-statistic')
+        @UseGuards(AuthGuard('jwt'))
+        @HttpCode(HttpStatus.OK)
+        async getMyStatisticFromPairs(
+            @GetUser() user: AccessTokenPayloadDTO,
+        ): Promise<UserStatisticResponseDTO> {
+            return this.queryBus.execute(new GetUserStatistic(user));
+        }
+
+        @Get('top')
+        @HttpCode(HttpStatus.OK)
+        async getUsersTop(
+            @Query() queryParams: UsersTopQueryParamsDTO,
+        ): Promise<PaginatedUsersTopResponseDTO> {
+            return this.queryBus.execute(new GetUsersTop(queryParams));
         }
     }

@@ -435,4 +435,38 @@ export class GameTestManager {
         }
         expect(response.status).toBe(403);
     }
+
+    async getAllUsersGames(jwt: string) {
+        const response = await request(this.app.getHttpServer())
+            .get(`/pair-game-quiz/pairs/my?sortBy=status&sortDirection=asc`)
+            .set('Authorization', `Bearer ${jwt}`);
+
+        if (response.status !== 403) {
+            console.error(response.body);
+        }
+
+        expect(response.status).toBe(200);
+
+        const items = response.body.items;
+
+        expect(items.length).toBe(4);
+
+        expect(items[0].status).toBe('Active');
+
+        // Проверяем, что массив игр отсортирован по статусу в порядке возрастания
+        for (let i = 0; i < items.length - 1; i++) {
+            const currentStatus = items[i].status;
+            const nextStatus = items[i + 1].status;
+
+            // Проверяем основной критерий - сортировка по статусу
+            expect(currentStatus <= nextStatus).toBe(true);
+
+            // Если статусы одинаковы, проверяем сортировку по дате создания пары
+            if (currentStatus === nextStatus) {
+                const currentDate = new Date(items[i].pairCreatedDate);
+                const nextDate = new Date(items[i + 1].pairCreatedDate);
+                expect(currentDate >= nextDate).toBe(true);
+            }
+        }
+    }
 }

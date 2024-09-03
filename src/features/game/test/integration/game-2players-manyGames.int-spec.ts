@@ -95,58 +95,7 @@ describe('game 2Players manyGames int', () => {
         });
     });
 
-    // it('Players join and starting 1st game', async () => {
-    //     const {userOneToken, userTwoToken} = expect.getState()
-    //     const game = await gameTestManager.connectPlayerToTheGame(userOneToken);
-    //     await gameTestManager.connectSecondPlayerToTheGame(userTwoToken);
-    //     const gameId = game.id;
-    //     const questions = await gameTestManager.getGameQuestions(gameId)
-    //     expect.setState({
-    //         currentGameId: gameId,
-    //         gameQuestions: questions
-    //     });
-    // });
-
-
-    // it('1st player answer', async () => {
-    //     const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
-    //     const wrongAnswer = gameTestManager.WRONG_ANSWER
-    //     let correctAnswer: AnswerDto | '' = ''
-    //
-    //     const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
-    //     const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
-    //     const correctAnswerIndexFour = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
-    //
-    //     await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
-    //     await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
-    //     await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexTwo);
-    //     await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexThree);
-    //     await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexFour);
-    // });
-    //
-    // it('1st player answer', async () => {
-    //     const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
-    //     const wrongAnswer = gameTestManager.WRONG_ANSWER
-    //     let correctAnswer: AnswerDto | '' = ''
-    //
-    //     const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
-    //     const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
-    //
-    //     await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
-    //     await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
-    //     await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexTwo);
-    //     await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexThree);
-    //     await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
-    // });
-    //
-    // it('Get game by id FINISHED', async () => {
-    //     const {userTwoToken, currentGameId} = expect.getState()
-    //     await gameTestManager.getFinishedGameById( userTwoToken, currentGameId);
-    // });
-    //
-    // ///** SECOND GAME **///
-
-    it('Players join and starting 2nd game', async () => {
+    it('Players join and starting 1st game', async () => {
         const {userOneToken, userTwoToken} = expect.getState()
         const game = await gameTestManager.connectPlayerToTheGame(userOneToken);
         await gameTestManager.connectSecondPlayerToTheGame(userTwoToken);
@@ -158,55 +107,175 @@ describe('game 2Players manyGames int', () => {
         });
     });
 
-    it('1 userOne question 1: Correct', async () => {
-        const {userOneToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 0)
-        await gameTestManager.giveCorrectAnswer(userOneToken, answer);
+
+    it('1st player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+        const correctAnswerIndexFour = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
+
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexThree);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexFour);
     });
 
-    it('2 userOne question 2: Correct', async () => {
-        const {userOneToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 1)
-        await gameTestManager.giveCorrectAnswer(userOneToken, answer);
+    it('2nd player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexThree);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
     });
 
-    it('3 userTwo question 1: Correct', async () => {
-        const {userTwoToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 0)
-        await gameTestManager.giveCorrectAnswer(userTwoToken, answer);
+
+    ///** SECOND GAME **///
+
+    it('Players join and starting 1st game', async () => {
+        const {userOneToken, userTwoToken} = expect.getState()
+        const game = await gameTestManager.connectPlayerToTheGame(userOneToken);
+        await gameTestManager.connectSecondPlayerToTheGame(userTwoToken);
+        const gameId = game.id;
+        const questions = await gameTestManager.getGameQuestions(gameId)
+        expect.setState({
+            currentGameId: gameId,
+            gameQuestions: questions
+        });
     });
 
-    it('4 userTwo question 2: Correct', async () => {
-        const {userTwoToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 1)
-        await gameTestManager.giveCorrectAnswer(userTwoToken, answer);
+
+    it('1st player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+        const correctAnswerIndexFour = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
+
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexThree);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexFour);
     });
 
-    it('5 userOne, question 3: incorrect', async () => {
+    it('2nd player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexThree);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+    });
+
+    // Third game //
+
+    it('Players join and starting 1st game', async () => {
+        const {userOneToken, userTwoToken} = expect.getState()
+        const game = await gameTestManager.connectPlayerToTheGame(userOneToken);
+        await gameTestManager.connectSecondPlayerToTheGame(userTwoToken);
+        const gameId = game.id;
+        const questions = await gameTestManager.getGameQuestions(gameId)
+        expect.setState({
+            currentGameId: gameId,
+            gameQuestions: questions
+        });
+    });
+
+
+    it('1st player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+        const correctAnswerIndexFour = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
+
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexThree);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexFour);
+    });
+
+    it('2nd player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexTwo);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexThree);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+    });
+
+    // 4th Game //
+
+    it('Players join and starting 1st game', async () => {
+        const {userOneToken, userTwoToken} = expect.getState()
+        const game = await gameTestManager.connectPlayerToTheGame(userOneToken);
+        await gameTestManager.connectSecondPlayerToTheGame(userTwoToken);
+        const gameId = game.id;
+        const questions = await gameTestManager.getGameQuestions(gameId)
+        expect.setState({
+            currentGameId: gameId,
+            gameQuestions: questions
+        });
+    });
+
+
+    it('1st player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+        const correctAnswerIndexFour = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
+
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userOneToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userOneToken, correctAnswerIndexTwo);
+    });
+
+    it('2nd player answer', async () => {
+        const {userOneToken, userTwoToken, gameQuestions} = expect.getState()
+        const wrongAnswer = gameTestManager.WRONG_ANSWER
+        let correctAnswer: AnswerDto | '' = ''
+
+        const correctAnswerIndexTwo = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
+        const correctAnswerIndexThree = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
+
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveAnswer(userTwoToken, wrongAnswer);
+        await gameTestManager.giveCorrectAnswer(userTwoToken, correctAnswerIndexTwo);
+    });
+
+    it('1st Player get all games', async () => {
         const {userOneToken} = expect.getState()
-        const answer = gameTestManager.WRONG_ANSWER
-        await gameTestManager.giveAnswer(userOneToken, answer);
-    });
-
-    it('6 userOne question 4: Correct', async () => {
-        const {userOneToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 3)
-        await gameTestManager.giveCorrectAnswer(userOneToken, answer);
-    });
-
-    it('7 userTwo question 3: Correct', async () => {
-        const {userTwoToken, gameQuestions} = expect.getState()
-        const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 2)
-        await gameTestManager.giveCorrectAnswer(userTwoToken, answer);
-    });
-
-    it('UserOne: Get users active game', async () => {
-        const {userOneToken} = expect.getState()
-        await gameTestManager.getActiveGameWithNoResults(userOneToken);
-    });
-
-    it('UserTwo: Get users active game', async () => {
-        const {userTwoToken} = expect.getState()
-        await gameTestManager.getActiveGameWithNoResults(userTwoToken);
-    });
+        await gameTestManager.getAllUsersGames(userOneToken)
+    })
 })
