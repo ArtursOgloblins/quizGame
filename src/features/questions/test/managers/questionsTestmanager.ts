@@ -120,9 +120,7 @@ export class QuestionsTestManager {
         return response;
     }
 
-    async publishQuestion(questionId: string,
-
-                          publishStatus: PublishQuestionDTO) {
+    async publishQuestion(questionId: string) {
         const response = await request(this.app.getHttpServer())
             .put(`/sa/quiz/questions/${questionId}/publish`)
             .auth(this.CREDENTIALS.login, this.CREDENTIALS.password)
@@ -136,8 +134,8 @@ export class QuestionsTestManager {
         return response;
     }
 
-    async publishAllQuestions(questionsIds: [], publishStatus: PublishQuestionDTO) {
-        const addQuestions = questionsIds.map(questionId => this.publishQuestion(questionId, publishStatus))
+    async publishAllQuestions(questionsIds: []) {
+        const addQuestions = questionsIds.map(questionId => this.publishQuestion(questionId))
         await Promise.all(addQuestions)
     }
 

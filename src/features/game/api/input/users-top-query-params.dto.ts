@@ -1,4 +1,4 @@
-import {ArrayNotEmpty, IsArray, IsIn, IsInt, IsOptional, IsString, Matches, Min} from "class-validator";
+import {ArrayNotEmpty, IsArray, IsInt, IsOptional, IsString, Matches, Min} from "class-validator";
 import {Transform} from "class-transformer";
 
 export class UsersTopQueryParamsDTO {

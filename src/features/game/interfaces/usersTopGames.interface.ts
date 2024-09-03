@@ -1,5 +1,3 @@
-import {Player} from "../api/output/user-top-response.dto";
-
 export interface TopPlayers {
     sumScore: number
     avgScores: number

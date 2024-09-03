@@ -14,7 +14,6 @@ import { DeleteUserByIdUseCase } from './application/usecases/delete-user.usecas
 import { RefreshToken } from '../auth/domain/auth.refresh-token.entity';
 import {PasswordRecovery} from "../auth/domain/auth.passwrd.recovery.entity";
 import {UsersQueryRepository} from "./infrastructure/users.query-repostory";
-import {GetUserStatisticQuery} from "../game/infrastructure/queries/game.get-my-statistic.query";
 
 @Module({
     imports: [
