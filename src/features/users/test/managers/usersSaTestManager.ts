@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import {RegisterUserDTO} from "../../api/dto/input/register-user.dto";
 import {UserQueryParamsDTO} from "../../api/dto/input/user-queryParams.dto";

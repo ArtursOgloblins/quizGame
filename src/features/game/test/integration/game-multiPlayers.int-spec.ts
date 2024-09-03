@@ -1,7 +1,7 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {AppModule} from "../../../../app.module";
 import {applyAppSettings} from "../../../../settings/applay-app-settings";
-import * as request from "supertest";
+import request from "supertest";
 import {INestApplication} from "@nestjs/common";
 import {DataSource} from "typeorm";
 import {getDataSourceOptions} from "../../../../../typeorm.config";
@@ -66,7 +66,7 @@ describe('game multiPlayers int', () => {
         const response = await questionsTestManager.getAllQuestions(queryParams)
         const questionIds: [] = response.body.items.map(i => i.id)
         const publishStatus = questionsTestManager.PUBLISH_STATUS
-        await questionsTestManager.publishAllQuestions(questionIds, publishStatus)
+        await questionsTestManager.publishAllQuestions(questionIds)
     });
 
     it('register and login 2 new players', async () => {

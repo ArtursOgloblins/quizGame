@@ -2,7 +2,7 @@ import {Test, TestingModule} from "@nestjs/testing";
 import {AppModule} from "../../../../app.module";
 import {RegisterUserCommand} from "../../application/usecases/register-user.usecase";
 import {applyAppSettings} from "../../../../settings/applay-app-settings";
-import * as request from "supertest";
+import request from "supertest";
 import {UsersQueryRepository} from "../../infrastructure/users.query-repostory";
 import {AuthTestManager} from "../managers/authTestManager";
 import {INestApplication} from "@nestjs/common";

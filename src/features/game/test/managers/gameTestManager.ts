@@ -1,5 +1,5 @@
 import {INestApplication} from "@nestjs/common";
-import * as request from 'supertest';
+import request from 'supertest';
 import {AnswerDto} from "../../api/input/answer.dto";
 import {GameQueryRepository} from "../../infrastructure/game.query-repository";
 import {GameStatus} from "../../api/output/game-response.dto";

@@ -1,7 +1,7 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {AppModule} from "../../../../app.module";
 import {applyAppSettings} from "../../../../settings/applay-app-settings";
-import * as request from "supertest";
+import request from "supertest";
 import {INestApplication} from "@nestjs/common";
 import {DataSource} from "typeorm";
 import {getDataSourceOptions} from "../../../../../typeorm.config";
@@ -64,7 +64,7 @@ describe('questions  int', () => {
     it('publish questions', async () => {
         const {questionIds} = expect.getState()
         const publishStatus = questionsTestManager.PUBLISH_STATUS
-        await questionsTestManager.publishAllQuestions(questionIds, publishStatus)
+        await questionsTestManager.publishAllQuestions(questionIds)
     });
 
     it('update 1 question', async () => {

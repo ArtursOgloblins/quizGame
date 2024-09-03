@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { RegisterUserDTO } from '../../api/dto/input/register-user.dto';
 import { ConfirmationCodeDto } from '../../../auth/api/dto/input/confirmation-code.dto';
 import {UsersQueryRepository} from "../../infrastructure/users.query-repostory";

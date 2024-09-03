@@ -6,7 +6,7 @@ import {
 import { useContainer } from 'class-validator';
 import { AppModule } from '../app.module';
 
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import {HttpExceptionFilter} from "../infrastructure/exception-filters/http.exception-filter";
 import {LoggerMiddleware} from "../infrastructure/middlewares/logger.middleware";
 
