@@ -86,12 +86,13 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
 
                 setTimeout(async () => {
                     // Timer expired, processing remaining questions as incorrect
+                    console.log('players.otherPlayer.status', players.otherPlayer.status)
                     if (players.otherPlayer.status !== GameStatus.Finished) {
                         console.log('Timer expired, processing remaining questions as incorrect');
                         await this.processRemainingQuestionsAsIncorrect(players);
                         await this.finishGame(players, activePlayer);
                     }
-                }, 10000);
+                }, 8000);
                 return result
             } else {
                 await this.finishGame(players, activePlayer);

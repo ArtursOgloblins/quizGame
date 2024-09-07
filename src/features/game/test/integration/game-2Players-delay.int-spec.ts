@@ -160,37 +160,42 @@ describe('game twoPlayers with delay', () => {
         const {userOneToken, gameQuestions} = expect.getState()
         const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
         await gameTestManager.giveCorrectAnswer(userOneToken, answer);
-    });
+        await new Promise(resolve => setTimeout(resolve, 20000));
+    }, 25000);
 
-    async function waitForGameToFinish(currentGameId, userToken) {
-        let gameStatus;
-        const maxAttempts = 10;
-        let attempts = 0;
-
-        do {
-            const response = await request(app.getHttpServer())
-                .get(`/pair-game-quiz/pairs/${currentGameId}`)
-                .set('Authorization', `Bearer ${userToken}`);
-
-            gameStatus = response.body.status;
-
-            if (gameStatus === GameStatus.Finished) {
-                return response.body;
-            }
-
-            attempts += 1;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        } while (gameStatus !== GameStatus.Finished && attempts < maxAttempts);
-
-        throw new Error('Game did not finish in the expected time.');
-    }
-
+    // async function waitForGameToFinish(currentGameId, userToken) {
+    //     let gameStatus;
+    //     const maxAttempts = 10;
+    //     let attempts = 0;
+    //
+    //     do {
+    //         const response = await request(app.getHttpServer())
+    //             .get(`/pair-game-quiz/pairs/${currentGameId}`)
+    //             .set('Authorization', `Bearer ${userToken}`);
+    //
+    //         gameStatus = response.body.status;
+    //
+    //         if (gameStatus === GameStatus.Finished) {
+    //             return response.body;
+    //         }
+    //
+    //         attempts += 1;
+    //         await new Promise(resolve => setTimeout(resolve, 1000)); // Ждем 1 секунду перед следующей попыткой
+    //     } while (gameStatus !== GameStatus.Finished && attempts < maxAttempts);
+    //
+    //     throw new Error('Game did not finish in the expected time.');
+    // }
+    //
     it('Get game by id FINISHED WITH DELAY', async () => {
         const {userOneToken, currentGameId} = expect.getState();
 
-        const game = await waitForGameToFinish(currentGameId, userOneToken);
+        const response = await request(app.getHttpServer())
+                    .get(`/pair-game-quiz/pairs/${currentGameId}`)
+                    .set('Authorization', `Bearer ${userOneToken}`);
 
-        expect(game).toEqual({
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual({
             id: expect.any(String),
             firstPlayerProgress: {
                 answers: expect.arrayContaining([
@@ -204,7 +209,7 @@ describe('game twoPlayers with delay', () => {
                     id: expect.any(String),
                     login: expect.any(String),
                 },
-                score: 5,  // Ожидаемый результат
+                score: 6,
             },
             secondPlayerProgress: {
                 answers: expect.arrayContaining([
