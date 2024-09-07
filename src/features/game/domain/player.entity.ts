@@ -29,6 +29,6 @@ export class Player {
     @ManyToOne(() => Game, (game) => [game.playerOne, game.playerTwo], { onDelete: 'CASCADE' })
     public game: Game;
 
-    @OneToMany(() => Answers, (answers) => answers.player, { cascade: true })
+    @OneToMany(() => Answers, (answers) => answers.player, { onDelete: 'CASCADE' })
     public answers: Answers[];
 }

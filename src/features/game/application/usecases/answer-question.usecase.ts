@@ -6,10 +6,11 @@ import {GameQueryRepository} from "../../infrastructure/game.query-repository";
 import {ForbiddenException} from "@nestjs/common";
 import {AnswerDto} from "../../api/input/answer.dto";
 import {AnswerResponseDto} from "../../api/output/answer-response.dto";
-import {AddLastAnswerParams} from "../../interfaces/lastAnswerParmas.interface";
-import {GameQuestions} from "../../domain/game-questions.entity";
+import {FinishGameParams} from "../../interfaces/lastAnswerParmas.interface";
 import {Players} from "../../interfaces/playersForAnsweringQuestion.interface";
 import {Game} from "../../domain/game.entity";
+import {Player} from "../../domain/player.entity";
+import {Answers} from "../../domain/answers.entity";
 
 export class AnswerQuestionCommand {
     constructor(public user: AccessTokenPayloadDTO,
@@ -67,82 +68,81 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
         return playerAnswers ? playerAnswers.length : 0
     }
 
-    private async answerNextQuestion(players: any, questionIndex: number, playerAnswer: AnswerDto) {
+    private async answerNextQuestion(players: Players, questionIndex: number, playerAnswer: AnswerDto): Promise<Answers> {
         const gameId = players.game.id
         const activePlayer = players.activePlayer.player
-        console.log('players.activePlayer.player', activePlayer)
+        const otherPlayer = players.otherPlayer.player
         const question = await this.gameQueryRepository.getNextQuestion(gameId, questionIndex)
         const answerStatus = this._getAnswerStatus(question, playerAnswer.answer)
         const playerNewStatus = questionIndex !== 4 ? GameStatus.Active : GameStatus.Finished
         const standardPointsAmount = answerStatus == AnswerStatus.Correct ? 1 :0
 
-        if (questionIndex !== 4) {
-            return await this.gameRepository.addAnswer(question, answerStatus, activePlayer, standardPointsAmount, playerNewStatus)
-        } else {
-            await this.startSecondPlayerTimer(players);
-            return this._processLastQuestion(players, question, answerStatus, standardPointsAmount)
+        const result = await this.gameRepository.addAnswer(question, answerStatus, activePlayer, standardPointsAmount, playerNewStatus);
+
+        if (questionIndex === 4) {
+            // If second player does not answer to all questions
+            if (players.otherPlayer.status !== GameStatus.Finished) {
+                console.log('Starting timer for second player to finish their answers');
+
+                setTimeout(async () => {
+                    // Timer expired, processing remaining questions as incorrect
+                    if (players.otherPlayer.status !== GameStatus.Finished) {
+                        console.log('Timer expired, processing remaining questions as incorrect');
+                        await this.processRemainingQuestionsAsIncorrect(players);
+                        await this.finishGame(players, activePlayer);
+                    }
+                }, 10000);
+                return result
+            } else {
+                await this.finishGame(players, activePlayer);
+                return result
+            }
         }
+        return result
     }
 
     private _getAnswerStatus(question: any, answer: string): AnswerStatus {
         return question.checkAnswer(answer) ? AnswerStatus.Correct : AnswerStatus.Incorrect;
     }
 
-    private async _processLastQuestion(
-        players: Players,
-        question: GameQuestions,
-        answerStatus: AnswerStatus,
-        activePlayerPoints: number,) {
+    private async finishGame(
+        players: Players, playerFinishedFirst: Player) {
+        const gameStatus = GameStatus.Finished
+        const bonusPoints = 1
 
-        const activePlayerStatus = GameStatus.Finished;
-
-        const isOtherPlayerFinished = players.otherPlayer.status === GameStatus.Finished;
-        const gameStatus = isOtherPlayerFinished ? GameStatus.Finished : GameStatus.Active;
-
-        const otherPlayerHasCorrectAnswers = players.otherPlayer.answers.some(
+        const playerHasCorrectAnswers = playerFinishedFirst.answers.some(
             answer => answer.status === AnswerStatus.Correct
         );
 
-        let otherPlayerBonusPoints = 0
-        if (isOtherPlayerFinished) {
-            otherPlayerBonusPoints = otherPlayerHasCorrectAnswers ? 1 : 0;
-        }
+        const playersBonusPoints = playerHasCorrectAnswers ? bonusPoints : 0;
 
         const gameFinishedAt = gameStatus === GameStatus.Finished ? new Date() : null;
 
-        const addLastAnswerParams: AddLastAnswerParams = {
-            question,
-            answerStatus,
+        const finishGameParams: FinishGameParams = {
             players,
-            activePlayerPoints,
-            otherPlayerBonusPoints,
-            activePlayerStatus,
+            playerFinishedFirst,
+            playersBonusPoints,
             gameStatus,
             gameFinishedAt
         }
 
-        return await this.gameRepository.addLastAnswer(addLastAnswerParams);
-    }
-
-    private async startSecondPlayerTimer(players: Players): Promise<void> {
-        const SECOND_PLAYER_TIMEOUT = 10000; // 10 секунд
-        const secondPlayer = players.otherPlayer.player;
-
-        setTimeout(async () => {
-            if (secondPlayer.status !== GameStatus.Finished) {
-                await this.processRemainingQuestionsAsIncorrect(players);
-            }
-        }, SECOND_PLAYER_TIMEOUT);
+        return await this.gameRepository.finishGame(finishGameParams);
     }
 
     private async processRemainingQuestionsAsIncorrect(players: Players): Promise<void> {
         const unansweredQuestionIndexes = await this.gameQueryRepository.getUnansweredQuestionIndexes(players.otherPlayer.player.id, players.game.id);
+        console.log('unansweredQuestionIndexes', unansweredQuestionIndexes)
+        const player = await this.gameRepository.findPlayerById(players.otherPlayer.player.id)
+        const gameId = players.game.id;
 
         for (const index of unansweredQuestionIndexes) {
-            await this.answerNextQuestion(players, index, { answer: '' });
+            const question = await this.gameQueryRepository.getNextQuestion(gameId, index);
+            const playerNewStatus = index !== 4 ? GameStatus.Active : GameStatus.Finished
+            console.log(`Processing question at index ${index}, player ID: ${players.otherPlayer.player.id}`);
+            await this.gameRepository.addAnswer(question, AnswerStatus.Incorrect, player, 0, playerNewStatus);
         }
 
-        await this._processLastQuestion(players, null, AnswerStatus.Incorrect, 0);
+        console.log('All remaining questions processed in order as incorrect');
     }
 
     private async checkGameUsers(userId: string, players: any) {

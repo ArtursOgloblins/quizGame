@@ -9,10 +9,9 @@ import {Questions} from "../../questions/domain/qustions.entity";
 import {AccessTokenPayloadDTO} from "../../auth/api/dto/input/access-token-params.dto";
 import {gameRandomQuestions} from "../api/output/game-random-question.dto";
 import {Answers} from "../domain/answers.entity";
-import {AddLastAnswerParams} from "../interfaces/lastAnswerParmas.interface";
+import {FinishGameParams} from "../interfaces/lastAnswerParmas.interface";
 
 Injectable()
-
 export class GameRepository {
     constructor(
         @InjectRepository(Game)
@@ -89,7 +88,7 @@ export class GameRepository {
     public async addAnswer(question: GameQuestions, answerStatus: AnswerStatus, player: Player, points: number, playerStatus: GameStatus) {
         try {
             return await this.gameQuestionsRepository.manager.transaction(async (manager: EntityManager) => {
-
+                console.log("ŠTART TRANSACTION")
                 player.score += points
                 player.status = playerStatus
                 await manager.save(Player, player);
@@ -101,7 +100,7 @@ export class GameRepository {
                 answer.question = question.question;
                 answer.gameQuestion = question;
                 await manager.save(Answers, answer);
-
+                console.log("FINISH TRANSACTION")
                 return answer;
             });
         } catch (error) {
@@ -110,25 +109,21 @@ export class GameRepository {
         }
     }
 
-    public async addLastAnswer(params: AddLastAnswerParams) {
+    public async finishGame(params: FinishGameParams) {
         try {
             const {
-                question,
-                answerStatus,
                 players,
-                activePlayerPoints,
-                otherPlayerBonusPoints,
-                activePlayerStatus,
+                playerFinishedFirst,
+                playersBonusPoints,
                 gameStatus,
                 gameFinishedAt
             } = params
+
             return await this.gameQuestionsRepository.manager.transaction(async (manager: EntityManager) => {
+                console.log('FINISH GAME')
+                playerFinishedFirst.score += playersBonusPoints;
                 const activePlayer = players.activePlayer.player
                 const otherPlayer = players.otherPlayer.player
-
-                activePlayer.score += activePlayerPoints;
-                activePlayer.status = activePlayerStatus;
-                otherPlayer.score += otherPlayerBonusPoints;
 
                 if (activePlayer.score === otherPlayer.score) {
                     activePlayer.gameResult = PlayerGameResult.Draw
@@ -141,28 +136,33 @@ export class GameRepository {
                     otherPlayer.gameResult = PlayerGameResult.Win
                 }
 
-                await manager.save(Player, activePlayer);
-                await manager.save(Player, otherPlayer);
+                await manager.createQueryBuilder()
+                    .update(Game)
+                    .set({ status: gameStatus, finishGameDate: gameFinishedAt})
+                    .where("id = :id", { id:  players.game.id})
+                    .execute();
 
+                await manager.createQueryBuilder()
+                    .update(Player)
+                    .set({score: activePlayer.score,
+                    gameResult: activePlayer.gameResult})
+                    .where('id = :id',{id: activePlayer.id})
+                    .execute()
 
-                players.game.status = gameStatus;
-                players.game.finishGameDate = gameFinishedAt;
-                await manager.save(Game, players.game);
-
-                const answer = new Answers();
-                answer.body = question.question.body;
-                answer.status = answerStatus;
-                answer.player = players.activePlayer.player
-                answer.question = question.question;
-                answer.gameQuestion = question;
-                await manager.save(Answers, answer);
-                console.log('Saved Answer:', answer);
-
-                return answer;
+                await manager.createQueryBuilder()
+                    .update(Player)
+                    .set({score: otherPlayer.score,
+                        gameResult: otherPlayer.gameResult})
+                    .where('id = :id',{id: otherPlayer.id})
+                    .execute()
             });
         } catch (error) {
-            console.log('Error in addLastAnswer', error);
+            console.log('Error in finishGame', error);
             throw error;
         }
+    }
+
+    async findPlayerById(id: number) : Promise<Player> {
+        return this.playerRepository.findOneBy({id})
     }
 }

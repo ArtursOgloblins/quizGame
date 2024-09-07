@@ -426,6 +426,58 @@ export class GameTestManager {
         return response.body
     }
 
+    async getFinishedGameByIdWithDelay(jwt: string, gameId: number) {
+        const response = await request(this.app.getHttpServer())
+            .get(`/pair-game-quiz/pairs/${gameId}`)
+            .set('Authorization', `Bearer ${jwt}`);
+        if (response.status !== 200) {
+            console.error(response.body);
+        }
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({
+            id: expect.any(String),
+            firstPlayerProgress: {
+                answers: expect.arrayContaining([
+                    expect.objectContaining({
+                        questionId: expect.any(String),
+                        answerStatus: expect.any(String),
+                        addedAt: expect.any(String),
+                    }),
+                ]),
+                player: {
+                    id: expect.any(String),
+                    login: expect.any(String),
+                },
+                score: 5,
+            },
+            secondPlayerProgress: {
+                answers: expect.arrayContaining([
+                    expect.objectContaining({
+                        questionId: expect.any(String),
+                        answerStatus: expect.any(String),
+                        addedAt: expect.any(String),
+                    }),
+                ]),
+                player: {
+                    id: expect.any(String),
+                    login: expect.any(String),
+                },
+                score: 0,
+            },
+            questions: expect.arrayContaining([
+                expect.objectContaining({
+                    id: expect.any(String),
+                    body: expect.any(String),
+                }),
+            ]),
+            status: GameStatus.Finished,
+            pairCreatedDate: expect.any(String),
+            startGameDate: expect.any(String),
+            finishGameDate: expect.any(String)
+        });
+        return response.body
+    }
+
     async getOtherGameById(jwt: string, gameId: number) {
         const response = await request(this.app.getHttpServer())
             .get(`/pair-game-quiz/pairs/${gameId}`)
