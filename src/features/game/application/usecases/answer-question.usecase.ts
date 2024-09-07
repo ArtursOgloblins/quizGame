@@ -71,7 +71,6 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
     private async answerNextQuestion(players: Players, questionIndex: number, playerAnswer: AnswerDto): Promise<Answers> {
         const gameId = players.game.id
         const activePlayer = players.activePlayer.player
-        const otherPlayer = players.otherPlayer.player
         const question = await this.gameQueryRepository.getNextQuestion(gameId, questionIndex)
         const answerStatus = this._getAnswerStatus(question, playerAnswer.answer)
         const playerNewStatus = questionIndex !== 4 ? GameStatus.Active : GameStatus.Finished
@@ -92,7 +91,7 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
                         await this.processRemainingQuestionsAsIncorrect(players);
                         await this.finishGame(players, activePlayer);
                     }
-                }, 10000);
+                }, 9000);
                 return result
             } else {
                 await this.finishGame(players, activePlayer);

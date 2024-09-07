@@ -53,19 +53,18 @@ describe('game twoPlayers with delay', () => {
         authTestManager = new AuthTestManager(app, usersQueryRepository);
         questionsTestManager = new QuestionsTestManager(app)
         gameTestManager = new GameTestManager(app, gameQueryRepository)
-    });
+    },10000);
 
     afterAll(async () => {
         await dataSource.destroy();
         await app.close();
-    });
+    },10000);
 
     it('add and publish 10 questions', async () => {
         const queryParams = questionsTestManager.QUESTIONS_QUERY_PARAMS
         await questionsTestManager.addMultipleQuestions(questionsTestManager.SAMPLE_QUESTIONS);
         const response = await questionsTestManager.getAllQuestions(queryParams)
         const questionIds: [] = response.body.items.map(i => i.id)
-        const publishStatus = questionsTestManager.PUBLISH_STATUS
         await questionsTestManager.publishAllQuestions(questionIds)
     });
 
@@ -160,7 +159,7 @@ describe('game twoPlayers with delay', () => {
         const {userOneToken, gameQuestions} = expect.getState()
         const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
         await gameTestManager.giveCorrectAnswer(userOneToken, answer);
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 11000));
     }, 15000);
 
     // async function waitForGameToFinish(currentGameId, userToken) {
