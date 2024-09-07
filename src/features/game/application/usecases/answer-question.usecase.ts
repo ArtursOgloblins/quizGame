@@ -131,17 +131,20 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
     }
 
     private async processRemainingQuestionsAsIncorrect(players: Players): Promise<void> {
-        const unansweredQuestionIndexes = await this.gameQueryRepository.getUnansweredQuestionIndexes(players.otherPlayer.player.id, players.game.id);
-        console.log('unansweredQuestionIndexes', unansweredQuestionIndexes)
-        const player = await this.gameRepository.findPlayerById(players.otherPlayer.player.id)
+        //const unansweredQuestions = await this.gameQueryRepository.getUnansweredQuestionIndexes(players.otherPlayer.player.id, players.game.id);
+        //const player = await this.gameRepository.findPlayerById(players.otherPlayer.player.id)
+        const player = players.otherPlayer.player
         const gameId = players.game.id;
+        const unAnsweredQuestions = await this.gameQueryRepository.getUnansweredQuestions(player.id, gameId)
+        console.log('unansweredQuestionIndexes', unAnsweredQuestions)
 
-        for (const index of unansweredQuestionIndexes) {
-            const question = await this.gameQueryRepository.getNextQuestion(gameId, index);
-            const playerNewStatus = index !== 4 ? GameStatus.Active : GameStatus.Finished
-            console.log(`Processing question at index ${index}, player ID: ${players.otherPlayer.player.id}`);
-            await this.gameRepository.addAnswer(question, AnswerStatus.Incorrect, player, 0, playerNewStatus);
-        }
+        // for (const index of unansweredQuestionIndexes) {
+        //     const question = await this.gameQueryRepository.getNextQuestion(gameId, index);
+        //     const playerNewStatus = index !== 4 ? GameStatus.Active : GameStatus.Finished
+        //     console.log(`Processing question at index ${index}, player ID: ${players.otherPlayer.player.id}`);
+        //     await this.gameRepository.addAnswer(question, AnswerStatus.Incorrect, player, 0, playerNewStatus);
+        // }
+        await this.gameRepository.answerRemainQuestions(player, unAnsweredQuestions)
 
         console.log('All remaining questions processed in order as incorrect');
     }

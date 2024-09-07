@@ -428,18 +428,24 @@ export class GameQueryRepository {
         }
     }
 
-    async getUnansweredQuestionIndexes(playerId: number, gameId: number): Promise<number[]> {
+
+    async getUnansweredQuestions(playerId: number, gameId: number):Promise<GameQuestions[]> {
         try {
-           const gameQuestions  =await this.gameQuestionsRepository
+           return await this.gameQuestionsRepository
                .createQueryBuilder('gq')
-               .leftJoinAndSelect('gq.answers', 'answers', 'answers.player.id = :playerId', { playerId })
+               .leftJoin('gq.answers', 'answers')
+               .leftJoinAndSelect('gq.question', 'questions')
                .where('gq.game.id = :gameId', {gameId})
+               .andWhere(`gq.id NOT IN
+                         (SELECT gq_sub.id
+                         FROM game_questions gq_sub
+                         LEFT JOIN answers a_sub
+                         ON gq_sub.id = a_sub."gameQuestionId"
+                         WHERE a_sub."playerId" = :playerId)`,{playerId})
                .getMany()
 
-            return gameQuestions.filter(gq => gq.answers.length === 0)
-                .map(gq => gq.questionIndex)
         } catch (error) {
-            console.log('Error in getUnansweredQuestionIndexes', error);
+            console.log('Error in getUnansweredQuestions', error);
             throw error;
         }
     }

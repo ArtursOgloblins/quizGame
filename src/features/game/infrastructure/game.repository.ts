@@ -21,7 +21,9 @@ export class GameRepository {
         @InjectRepository(Questions)
         private readonly questionsRepository: Repository<Questions>,
         @InjectRepository(GameQuestions)
-        private readonly gameQuestionsRepository: Repository<GameQuestions>
+        private readonly gameQuestionsRepository: Repository<GameQuestions>,
+        @InjectRepository(Answers)
+        private readonly answersRepository: Repository<Answers>
     ) {
     }
 
@@ -107,6 +109,28 @@ export class GameRepository {
             console.log('Error in addAnswer', error);
             throw error;
         }
+    }
+
+    public async answerRemainQuestions(player: Player, unAnsweredQuestions: GameQuestions[]) {
+        return await this.answersRepository.manager.transaction(async (manager: EntityManager)=> {
+        await manager.createQueryBuilder()
+                .insert()
+                .into('answers')
+                .values(unAnsweredQuestions.map(question => ({
+                    body: question.question.body,
+                    status:AnswerStatus.Incorrect,
+                    player: {id: player.id},
+                    question: { id: question.question.id },
+                    gameQuestion: { id: question.id }
+                })))
+                .execute()
+
+            await manager.createQueryBuilder()
+                .update(Player)
+                .set({status: GameStatus.Finished})
+                .where('id = :playerId',{playerId: player.id})
+                .execute()
+        })
     }
 
     public async finishGame(params: FinishGameParams) {

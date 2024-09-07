@@ -160,8 +160,8 @@ describe('game twoPlayers with delay', () => {
         const {userOneToken, gameQuestions} = expect.getState()
         const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
         await gameTestManager.giveCorrectAnswer(userOneToken, answer);
-        await new Promise(resolve => setTimeout(resolve, 20000));
-    }, 25000);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+    }, 15000);
 
     // async function waitForGameToFinish(currentGameId, userToken) {
     //     let gameStatus;
