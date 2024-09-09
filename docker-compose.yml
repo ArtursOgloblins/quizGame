@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14
+    container_name: local_postgres
+    environment:
+      POSTGRES_USER: blogs_posts_owner
+      POSTGRES_PASSWORD: NklfFIcMm84x
+      POSTGRES_DB: blogs_posts
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"

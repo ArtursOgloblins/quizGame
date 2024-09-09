@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {InjectDataSource, InjectRepository} from "@nestjs/typeorm";
-import {DataSource, Repository} from "typeorm";
+import {Brackets, DataSource, Repository} from "typeorm";
 import {Game} from "../domain/game.entity";
 import {GameResponseDTO, GameStatus} from "../api/output/game-response.dto";
 import {Player, PlayerGameResult} from "../domain/player.entity";
@@ -429,23 +429,50 @@ export class GameQueryRepository {
     }
 
 
-    async getUnansweredQuestions(playerId: number, gameId: number):Promise<GameQuestions[]> {
+    async getUnansweredQuestions(gamesToFinish: { gameId: number, otherPlayerId: number | null}[] ): Promise<Record<number, GameQuestions[]>> {
         try {
-           return await this.gameQuestionsRepository
-               .createQueryBuilder('gq')
-               .leftJoin('gq.answers', 'answers')
-               .leftJoinAndSelect('gq.question', 'questions')
-               .where('gq.game.id = :gameId', {gameId})
-               .andWhere(`gq.id NOT IN
+            const unansweredQuestionsMap: Record<number, GameQuestions[]> = {};
+            for (const game of gamesToFinish) {
+                if (game.otherPlayerId === null) {
+                    console.log(`Skipping game ${game.gameId} as there is no active player`);
+                    continue;
+                }
+                unansweredQuestionsMap[game.gameId] = await this.gameQuestionsRepository
+                    .createQueryBuilder('gq')
+                    .leftJoin('gq.answers', 'answers')
+                    .leftJoinAndSelect('gq.question', 'questions')
+                    .where('gq.game.id = :gameId', {gameId: game.gameId})
+                    .andWhere(`gq.id NOT IN
                          (SELECT gq_sub.id
                          FROM game_questions gq_sub
                          LEFT JOIN answers a_sub
                          ON gq_sub.id = a_sub."gameQuestionId"
-                         WHERE a_sub."playerId" = :playerId)`,{playerId})
-               .getMany()
-
+                         WHERE a_sub."playerId" = :playerId)`, {playerId: game.otherPlayerId})
+                    .getMany();
+            }
+            return unansweredQuestionsMap
         } catch (error) {
             console.log('Error in getUnansweredQuestions', error);
+            throw error;
+        }
+    }
+
+    async getGamesToFinish(): Promise<Game[]> {
+        try {
+            return await this.gameQueryRepository
+                .createQueryBuilder('g')
+                .leftJoinAndSelect('g.playerOne', 'playerOne')
+                .leftJoinAndSelect('g.playerTwo', 'playerTwo')
+                .where("g.status = 'Active'")
+                .andWhere(
+                    new Brackets(qb => {
+                        qb.where('(playerOne.lastAnswerAddedAt IS NOT NULL AND playerOne.lastAnswerAddedAt < NOW() - INTERVAL \'7 seconds\')')
+                            .orWhere('(playerTwo.lastAnswerAddedAt IS NOT NULL AND playerTwo.lastAnswerAddedAt < NOW() - INTERVAL \'7 seconds\')');
+                    })
+                )
+                .getMany();
+        } catch (error) {
+            console.log('Error in getGamesToFinish', error);
             throw error;
         }
     }

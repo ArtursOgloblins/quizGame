@@ -30,6 +30,8 @@ import {GetUserStatistic} from "../infrastructure/queries/game.get-my-statistic.
 import {PaginatedUsersTopResponseDTO} from "./output/user-top-response.dto";
 import {GetUsersTop} from "../infrastructure/queries/game.get-users-top.query";
 import {UsersTopQueryParamsDTO} from "./input/users-top-query-params.dto";
+import {Interval} from "@nestjs/schedule";
+import {GameFinisherCommand} from "../application/usecases/game-finisher.usecase";
 
 @Controller('pair-game-quiz/pairs')
 @UseGuards(AuthGuard('jwt'))
@@ -55,6 +57,12 @@ import {UsersTopQueryParamsDTO} from "./input/users-top-query-params.dto";
             return this.commandBus.execute(new AnswerQuestionCommand(user, answer))
         }
 
+        @Interval(1000)
+        handleInterval() {
+            console.log('Called every seconds');
+            return this.commandBus.execute(new GameFinisherCommand())
+        }
+
         @Get('my-current')
         @HttpCode(HttpStatus.OK)
         async getCurrentGame(@GetUser() user: AccessTokenPayloadDTO): Promise<GameResponseDTO> {
@@ -70,14 +78,13 @@ import {UsersTopQueryParamsDTO} from "./input/users-top-query-params.dto";
             return this.queryBus.execute(new GetAllUserGames(user, queryParams))
         }
 
-
-    @Get(':gameId')
-        @HttpCode(HttpStatus.OK)
-        async getGameById(
-            @GetUser() user: AccessTokenPayloadDTO,
-            @Param('gameId', ParseIntPipe) gameId: number): Promise<GameResponseDTO> {
-            return this.queryBus.execute(new GetGameById(gameId, user));
-        }
+        @Get(':gameId')
+            @HttpCode(HttpStatus.OK)
+            async getGameById(
+                @GetUser() user: AccessTokenPayloadDTO,
+                @Param('gameId', ParseIntPipe) gameId: number): Promise<GameResponseDTO> {
+                return this.queryBus.execute(new GetGameById(gameId, user));
+            }
     }
 
     @Controller('pair-game-quiz/users')

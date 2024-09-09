@@ -23,6 +23,9 @@ export class Player {
     @Column({type: 'varchar', nullable: true})
     public gameResult: PlayerGameResult
 
+    @Column({ type: 'timestamp with time zone' })
+    public lastAnswerAddedAt: Date
+
     @ManyToOne(() => Users, (user) => user.player)
     public user: Users;
 

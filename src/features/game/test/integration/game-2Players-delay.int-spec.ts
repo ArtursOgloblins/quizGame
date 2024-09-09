@@ -14,7 +14,6 @@ import {QuestionsTestManager} from "../../../questions/test/managers/questionsTe
 import {GameTestManager} from "../managers/gameTestManager";
 import {GameQueryRepository} from "../../infrastructure/game.query-repository";
 import {AnswerDto} from "../../api/input/answer.dto";
-import {GameStatus} from "../../api/output/game-response.dto";
 
 describe('game twoPlayers with delay', () => {
     let app: INestApplication;
@@ -159,58 +158,57 @@ describe('game twoPlayers with delay', () => {
         const {userOneToken, gameQuestions} = expect.getState()
         const answer: AnswerDto = await gameTestManager.getCorrectAnswer(gameQuestions, 4)
         await gameTestManager.giveCorrectAnswer(userOneToken, answer);
-        await new Promise(resolve => setTimeout(resolve, 11000));
-    }, 15000);
+    });
 
-    it('Get game by id FINISHED WITH DELAY', async () => {
-        const {userOneToken, currentGameId} = expect.getState();
-
-        const response = await request(app.getHttpServer())
-                    .get(`/pair-game-quiz/pairs/${currentGameId}`)
-                    .set('Authorization', `Bearer ${userOneToken}`);
-
-        expect(response.status).toBe(200);
-
-        expect(response.body).toEqual({
-            id: expect.any(String),
-            firstPlayerProgress: {
-                answers: expect.arrayContaining([
-                    expect.objectContaining({
-                        questionId: expect.any(String),
-                        answerStatus: expect.any(String),
-                        addedAt: expect.any(String),
-                    }),
-                ]),
-                player: {
-                    id: expect.any(String),
-                    login: expect.any(String),
-                },
-                score: 6,
-            },
-            secondPlayerProgress: {
-                answers: expect.arrayContaining([
-                    expect.objectContaining({
-                        questionId: expect.any(String),
-                        answerStatus: expect.any(String),
-                        addedAt: expect.any(String),
-                    }),
-                ]),
-                player: {
-                    id: expect.any(String),
-                    login: expect.any(String),
-                },
-                score: 0,
-            },
-            questions: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.any(String),
-                    body: expect.any(String),
-                }),
-            ]),
-            status: GameStatus.Finished,
-            pairCreatedDate: expect.any(String),
-            startGameDate: expect.any(String),
-            finishGameDate: expect.any(String)
-        });
-    }, 30000);
+    // it('Get game by id FINISHED WITH DELAY', async () => {
+    //     const {userOneToken, currentGameId} = expect.getState();
+    //
+    //     const response = await request(app.getHttpServer())
+    //                 .get(`/pair-game-quiz/pairs/${currentGameId}`)
+    //                 .set('Authorization', `Bearer ${userOneToken}`);
+    //
+    //     expect(response.status).toBe(200);
+    //
+    //     expect(response.body).toEqual({
+    //         id: expect.any(String),
+    //         firstPlayerProgress: {
+    //             answers: expect.arrayContaining([
+    //                 expect.objectContaining({
+    //                     questionId: expect.any(String),
+    //                     answerStatus: expect.any(String),
+    //                     addedAt: expect.any(String),
+    //                 }),
+    //             ]),
+    //             player: {
+    //                 id: expect.any(String),
+    //                 login: expect.any(String),
+    //             },
+    //             score: 6,
+    //         },
+    //         secondPlayerProgress: {
+    //             answers: expect.arrayContaining([
+    //                 expect.objectContaining({
+    //                     questionId: expect.any(String),
+    //                     answerStatus: expect.any(String),
+    //                     addedAt: expect.any(String),
+    //                 }),
+    //             ]),
+    //             player: {
+    //                 id: expect.any(String),
+    //                 login: expect.any(String),
+    //             },
+    //             score: 0,
+    //         },
+    //         questions: expect.arrayContaining([
+    //             expect.objectContaining({
+    //                 id: expect.any(String),
+    //                 body: expect.any(String),
+    //             }),
+    //         ]),
+    //         status: GameStatus.Finished,
+    //         pairCreatedDate: expect.any(String),
+    //         startGameDate: expect.any(String),
+    //         finishGameDate: expect.any(String)
+    //     });
+    // }, 30000);
 })

@@ -18,12 +18,15 @@ import {AnswerQuestionUseCase} from "./application/usecases/answer-question.usec
 import {GetAllUserGamesQuery} from "./infrastructure/queries/game.get-all-my-games.query";
 import {GetUserStatisticQuery} from "./infrastructure/queries/game.get-my-statistic.query";
 import {GetUsersTopQuery} from "./infrastructure/queries/game.get-users-top.query";
+import {ScheduleModule} from "@nestjs/schedule";
+import {GameFinisherUseCase} from "./application/usecases/game-finisher.usecase";
 
 @Module({
     imports: [
         CqrsModule,
         UsersModule,
-        TypeOrmModule.forFeature([Answers, Game, GameQuestions, Player, Questions])
+        TypeOrmModule.forFeature([Answers, Game, GameQuestions, Player, Questions]),
+        ScheduleModule.forRoot(),
     ],
     controllers: [GameController, UsersGameController],
     providers: [
@@ -32,6 +35,7 @@ import {GetUsersTopQuery} from "./infrastructure/queries/game.get-users-top.quer
         QuestionsQueryRepository,
         AnswerQuestionUseCase,
         ConnectToTheGameUseCase,
+        GameFinisherUseCase,
         GetCurrentGameQuery,
         GetGameByIdQuery,
         GetAllUserGamesQuery,
