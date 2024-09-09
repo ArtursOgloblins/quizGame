@@ -91,7 +91,7 @@ export class AnswerQuestionUseCase implements ICommandHandler<AnswerQuestionComm
                         await this.processRemainingQuestionsAsIncorrect(players);
                         await this.finishGame(players, activePlayer);
                     }
-                }, 9000);
+                }, 10000);
                 return result
             } else {
                 await this.finishGame(players, activePlayer);

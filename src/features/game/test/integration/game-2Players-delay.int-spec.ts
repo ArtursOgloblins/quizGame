@@ -162,29 +162,6 @@ describe('game twoPlayers with delay', () => {
         await new Promise(resolve => setTimeout(resolve, 11000));
     }, 15000);
 
-    // async function waitForGameToFinish(currentGameId, userToken) {
-    //     let gameStatus;
-    //     const maxAttempts = 10;
-    //     let attempts = 0;
-    //
-    //     do {
-    //         const response = await request(app.getHttpServer())
-    //             .get(`/pair-game-quiz/pairs/${currentGameId}`)
-    //             .set('Authorization', `Bearer ${userToken}`);
-    //
-    //         gameStatus = response.body.status;
-    //
-    //         if (gameStatus === GameStatus.Finished) {
-    //             return response.body;
-    //         }
-    //
-    //         attempts += 1;
-    //         await new Promise(resolve => setTimeout(resolve, 1000)); // Ждем 1 секунду перед следующей попыткой
-    //     } while (gameStatus !== GameStatus.Finished && attempts < maxAttempts);
-    //
-    //     throw new Error('Game did not finish in the expected time.');
-    // }
-    //
     it('Get game by id FINISHED WITH DELAY', async () => {
         const {userOneToken, currentGameId} = expect.getState();
 
